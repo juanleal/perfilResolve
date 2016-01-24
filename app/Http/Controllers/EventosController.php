@@ -73,12 +73,18 @@ class EventosController extends Controller {
         return json_encode($fotos);
     }
 
+    /*
+     * Consulta los próximos eventos de un usuario
+     */
     public function proximos() {
         $user_id = $this->req->input('userId');
         $proximos = Eventos::where('user_id', '=', $user_id)->where('start', '>=', date('Y-m-d'))->get();
         return json_encode($proximos);
     }
 
+    /*
+     * Verifica cuantos eventos ha asistido un usuario
+     */
     public function asistidos() {
         $user_id = $this->req->input('userId');
         $fechaFinal = date('Y-m-d');

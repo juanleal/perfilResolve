@@ -60,6 +60,7 @@ class FotoController extends Controller {
 
     /**
      * Display the specified resource.
+     * Consulta las fotos de un usuario
      *
      * @param  int $user_id
      * @return Response

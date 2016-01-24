@@ -3558,16 +3558,29 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                 $scope.myMarkers = [];
                 $scope.ciudad = "";
                 $scope.estados = [];
-
+                
+                /*
+                 * Muestra el resultado de un error
+                 * @returns {Boolean}
+                 */
                 $scope.showResult = function () {
                     return $scope.error == "";
                 }
+                
+                /*
+                 * Opciones del mapa de google para la geolocalización
+                 */
                 $scope.mapOptions = {
                     center: new google.maps.LatLng($scope.lat, $scope.lng),
                     zoom: 15,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
-
+                
+                /*
+                 * Esto es para mostrar la posición del mapa, pero no lo muestro
+                 * @param {type} position
+                 * @returns {undefined}
+                 */
                 $scope.showPosition = function (position) {
                     $scope.lat = position.coords.latitude;
                     $scope.lng = position.coords.longitude;
@@ -3580,6 +3593,10 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     $scope.myMarkers.push(new google.maps.Marker({map: $scope.model.myMap, position: latlng}));
                 }
 
+                /*
+                 * En caso tal de que no se pueda localizar a la persona, toma por defecto bogotá
+                 * @returns {undefined}
+                 */
                 $scope.showPositionDefault = function () {
                     $scope.lat = 4.710989;
                     $scope.lng = -74.072092;
@@ -3591,7 +3608,12 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     //$scope.model.myMap.setCenter(latlng);
                     $scope.myMarkers.push(new google.maps.Marker({map: $scope.model.myMap, position: latlng}));
                 }
-
+                
+                /*
+                 * Muestra el error de la localizacion del mapa
+                 * @param {type} error
+                 * @returns {undefined}
+                 */
                 $scope.showError = function (error) {
                     /*switch (error.code) {
                      case error.PERMISSION_DENIED:
@@ -3611,6 +3633,10 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     $scope.showPositionDefault();
                 }
 
+                /*
+                 * Trae las coordenadas del mapa a través de geolocalización de google maps
+                 * @returns {undefined}
+                 */
                 $scope.getLocation = function () {
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition($scope.showPosition, $scope.showError);
@@ -3622,32 +3648,38 @@ angular.module("GeoController", ["ui.map", "ui.event"])
 
                 $scope.getLocation();
 
+                /*
+                 * Captura el nombre de la ciudad que se localizó, para después enviarselo a la api del clima
+                 * @param {type} lat
+                 * @param {type} lng
+                 * @returns {undefined}
+                 */
                 function codeLatLng(lat, lng) {
                     var geocoder = new google.maps.Geocoder();
                     var latlng = new google.maps.LatLng(lat, lng);
                     geocoder.geocode({'latLng': latlng}, function (results, status) {
                         if (status == google.maps.GeocoderStatus.OK) {
                             if (results[1]) {
-                                //formatted address
+                                //formateo de dirección
                                 console.log(results[0].formatted_address);
-                                //find country name
+                                //buscamos el nombre de la ciudad
                                 for (var i = 0; i < results[0].address_components.length; i++) {
                                     for (var b = 0; b < results[0].address_components[i].types.length; b++) {
 
-                                        //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
+                                        //Esto lo que hace es buscar por sublocalidad un sitio en el mapa
                                         if (results[0].address_components[i].types[b] == "administrative_area_level_1") {
-                                            //this is the object you are looking for
+                                            //este el objetom que contiene la ciudad
                                             city = results[0].address_components[i];
                                             break;
                                         }
                                     }
                                 }
-                                //city data
+                                //datos de la ciudad
                                 $scope.ciudad = city.short_name;
                                 //viewForest(weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'}));
                                 weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'})
                                         .then(viewForest);
-                                ;
+                                
                                 //console.log(city.short_name + " " + city.long_name);
                             } else {
                                 alert("No results found");

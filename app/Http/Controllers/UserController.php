@@ -26,7 +26,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Log a user in.
+     * Login de la app
      *
      * @return Response
      */
@@ -51,7 +51,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Get a user by the token from the header.
+     * Verifica el toooken de sesión del usuario, en otras palabra el estado de sesión
      *
      * @return Response
      */
@@ -78,7 +78,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Display a listing of the resource.
+     * Muestra los usuarios por cada 4 registros para el link de explorar perfiles
      *
      * @return Response
      */
@@ -96,7 +96,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guarda usuarios
      *
      * @return Response
      */
@@ -112,7 +112,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Display the specified resource.
+     * Carga la información del perfil de un usuario.
      *
      * @param  int $url
      * @return Response
@@ -127,6 +127,9 @@ class UserController extends Controller {
         return $usuario;
     }
 
+    /*
+     * Almacena las visitas de los perfiles que se visitan
+     */
     public function guardarVisitaPerfil($newModel, $userIn) {
         if ($newModel->id != $userIn) {
             $newModel->visitas = $newModel->visitas + 1;
@@ -145,7 +148,7 @@ class UserController extends Controller {
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza el usuario
      *
      * @param  int $id
      * @return Response
