@@ -10,6 +10,12 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
     $scope.getEventos = function () {
         serviceEventos.getEventos($scope.authenticatedUser.id).then(mostrarEventos);
     }
+    
+    /*
+     * alimenta al model events que son los eventos que se muestran en el calendario
+     * @param {type} datos
+     * @returns {undefined}
+     */
     function mostrarEventos(datos) {
         for (var i = 0; i < datos.data.length; i++) {
             $scope.events.push({
@@ -39,13 +45,22 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             sources.push(source);
         }
     };
+    
+    /*
+     * Agrega un evento al calendario
+     * @param {type} objNewEvent
+     * @returns {undefined}
+     */
     $scope.addEvent = function (objNewEvent) {
         $scope.events.push(objNewEvent);
         toastr.success('Agregaste un nuevo evento!');
         $scope.nuevoEvento = null;
     };
 
-    /* store event */
+    /*
+     * Guarda un evento en la bd
+     * @returns {undefined}
+     */
     $scope.guardarEvento = function () {
         var eventDefault = $scope.nuevoEvento;
         var objNewEvent = {
@@ -72,10 +87,19 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             });
         }
     };
+    /*
+     * Quita un evento del calendario
+     * @param {type} index
+     * @returns {undefined}
+     */
     $scope.remove = function (index) {
         $scope.events.splice(index, 1);
     }
-    /* remove event */
+    /*
+     * Elimina un elemento de la bd
+     * @param {type} index
+     * @returns {undefined}
+     */
     $scope.eliminaEvento = function (index) {
         var idEliminar = this.info.id;
         $.each($scope.events, function (index, value) {
@@ -90,6 +114,11 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             toastr.error('Ups!, hubo un error eliminando el evento!');
         });
     };
+    /*
+     * alimenta el model de los próximos eventos
+     * @param {type} proximosEventos
+     * @returns {undefined}
+     */
     function mostrarProximos(proximosEventos) {
         angular.forEach(proximosEventos.data, function (value, key) {
             value.start = new Date(value.start);
@@ -97,7 +126,10 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             $scope.proximos.push(value);
         });
     }
-    /* proximos eventos */
+    /*
+     * Carga los próximos eventos del usuario logueado
+     * @returns {undefined}
+     */
     $scope.proximosEventos = function () {
         serviceEventos.getProximos($scope.authenticatedUser.id).then(mostrarProximos);
     }
@@ -124,7 +156,11 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
     /* event sources array*/
     $scope.eventSources = [$scope.events];
 
-
+    /*
+     * Actualiza el estado de una asistencia a un evento
+     * @param {type} $event
+     * @returns {undefined}
+     */
     $scope.actualizarAsistencia = function ($event) {
         Eventos.update({
             id: $event.target.id,
@@ -137,6 +173,10 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
         });
     };
 
+    /*
+     * Verifica a cuantos eventos se han asistido en el último mes
+     * @returns {undefined}
+     */
     $scope.eventosAsistidos = function () {
         serviceEventos.getAsistidos($scope.authenticatedUser.id).then(function (data) {
             $scope.asistidos = data.data;

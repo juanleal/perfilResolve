@@ -113,7 +113,7 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                                 //formateo de dirección
                                 console.log(results[0].formatted_address);
                                 //buscamos el nombre de la ciudad
-                                for (var i = 0; i < results[0].address_components.length; i++) {
+                                /*for (var i = 0; i < results[0].address_components.length; i++) {
                                     for (var b = 0; b < results[0].address_components[i].types.length; b++) {
 
                                         //Esto lo que hace es buscar por sublocalidad un sitio en el mapa
@@ -123,13 +123,13 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                                             break;
                                         }
                                     }
-                                }
+                                }*/
+                                var datosUbicacion = results[0].formatted_address.split(',');
                                 //datos de la ciudad
-                                $scope.ciudad = city.short_name;
+                                //$scope.ciudad = city.short_name;
                                 //viewForest(weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'}));
-                                weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'})
+                                weatherService.getClima({city: datosUbicacion[1].trim(), state: datosUbicacion[3].trim(), country: datosUbicacion[4].trim()})
                                         .then(viewForest);
-                                
                                 //console.log(city.short_name + " " + city.long_name);
                             } else {
                                 alert("No results found");
@@ -139,7 +139,12 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                         }
                     });
                 }
-
+                
+                /*
+                 * Convierte los °f a °c
+                 * @param {type} input
+                 * @returns {String}
+                 */
                 var gradesC = function (input) {
                     var grados = (input - 32) / 1.8;
                     if (grados % 1 != 0) {
@@ -148,7 +153,10 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     return grados + '°C ';
                 };
 
-
+                /*
+                 * socia los códigos de la api con los nombres
+                 * @type Array
+                 */
                 var weatherIconMap = ['storm', 'storm', 'storm', 'lightning', 'lightning', 'snow', 'hail', 'hail',
                     'drizzle', 'drizzle', 'rain', 'rain', 'rain', 'snow', 'snow', 'snow', 'snow',
                     'hail', 'hail', 'fog', 'fog', 'fog', 'fog', 'wind', 'wind', 'snowflake',
@@ -161,6 +169,11 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                         scroller = $('#scroller'),
                         location = $('p.location');
 
+                 /*
+                  * Muestra los datos del tiempo en la vista
+                  * @param {type} r
+                  * @returns {undefined}
+                  */
                 function viewForest(r) {
                     var r = r.data;
                     var hoy = r.query.results.channel.item.condition;
@@ -185,7 +198,14 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     showSlide(0);
                     ///////
                 }
-
+                
+                /*
+                 * Va agregando datos a un array de pronosticos
+                 * @param {type} code
+                 * @param {type} day
+                 * @param {type} condition
+                 * @returns {undefined}
+                 */
                 function addWeather(code, day, condition) {
                     $scope.estados.push(
                             {
@@ -215,7 +235,9 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     showSlide(currentSlide + 1);
                 });
 
-
+                /*
+                 * Slider de los pronosticos
+                 */
                 function showSlide(i) {
                     var items = scroller.find('li');
 
@@ -240,51 +262,34 @@ angular.module("GeoController", ["ui.map", "ui.event"])
             }])
                 .service('weatherService', function ($http, $q, $rootScope) {
                     var getQuery = function (location) {
-                        var query = 'select * from weather.forecast where woeid in ' + '(select woeid from geo.places(1) where text="city")';
-
+                        var query = 'select * from weather.forecast where woeid in ' + '(select woeid from geo.places(1) where text="city, country")';
+                        //genera el query del servicio de pronostico
                         query = query.replace('city', location.city)
-                                /*.replace('state', location.state)
-                                 .replace('country', location.country)*/;
+                                //.replace('state', location.state)
+                                 .replace('country', location.country);
                         console.log(query);
                         return query;
-                    }
+                    };
 
+                    //genera la url del servicio
                     var getUrl = function (location) {
                         var baseUrl = 'https://query.yahooapis.com/v1/public/yql?q=';
+                        var extUrl = '&format=json&env=store://datatables.org/alltableswithkeys&callback=JSON_CALLBACK';
                         var query = encodeURIComponent(getQuery(location));
-                        var finalUrl = baseUrl + query;
+                        var finalUrl = baseUrl + query + extUrl;
                         return finalUrl;
-                    }
+                    };
 
-                    // implementation
+                    // implementacion del servicio de tiempo
                     this.getClima = function (location) {
                         var def = $q.defer();
                         var url = getUrl(location);
-                        return $http.jsonp('https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22bogot%C3%A1%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=JSON_CALLBACK').success(function (data) {
+                        return $http.jsonp(url).success(function (data) {
                             def.resolve(data);
                         }).error(function () {
                             def.reject("Failed to get albums");
                         });
                         return def.promise;
-                    }
+                    };
 
-                }).factory('climaService', ['$http', '$q'],
-                function climaService($http, $q) {             // interface
-                    var service = getClima;
-                    return service;
-
-                    // implementation
-                    function getClima() {
-                        var def = $q.defer();
-
-                        $http.jsonp('https://query.yahooapis.com/v1/public/yql?q=', {format: 'json',
-                            env: 'store%3A%2F%2Fdatatables.org%2Falltableswithkeys',
-                            callback: 'JSON_CALLBACK'
-                        }).success(function (data) {
-                            def.resolve(data);
-                        }).error(function () {
-                            def.reject("Failed to get albums");
-                        });
-                        return def.promise;
-                    }
                 })

@@ -1,7 +1,10 @@
 angular.module('FotosController', [])
         .controller('FotosController', ['$scope', 'Foto', '$localStorage', '$location', '$route',
             function ($scope, Foto, $localStorage, $location, $route) {
-
+                /*
+                 * Guarda una foto del usuario
+                 * @returns {undefined}
+                 */
                 $scope.create = function () {
                     if ($scope.addFoto.$valid) {
                         var foto = new Foto({
@@ -19,14 +22,22 @@ angular.module('FotosController', [])
                         });
                     }
                 };
+                /*
+                 * refresca las fotos una vez se guardan
+                 * @returns {undefined}
+                 */
                 $scope.refFotos = function () {
                     //window.location.reload();
                     toastr.options.onShown = function () {
                         $route.reload();
                     }
                     toastr.success('Tú foto se agregó!');
-                }
-
+                };
+                
+                /*
+                 * Consulta las fotos del usuario
+                 * @returns {undefined}
+                 */
                 $scope.getFotos = function () {
                     /*var splitPath = $location.path().split('/');
                      var userId = splitPath[1];*/
@@ -45,11 +56,10 @@ angular.module('FotosController', [])
                 };
 
                 $scope.viewLoaded = function () {
-                    alert('view load sussefully')
                     $('.slider').addClass('fullscreen');
                 };
             }
-        ])
+        ]) //esta es una directiva para manipular archivos
         .directive('appFilereader', function (
                 $q
                 ) {
@@ -92,20 +102,20 @@ angular.module('FotosController', [])
                             return deferred.promise;
                         }
 
-                    }); //change
+                    });
 
-                } //link
+                }
 
-            }; //return
+            };
 
-        })
+        })//verifica si se termino un ng-repeat para bindear con el slider de las fotos para el efecro
         .directive('myRepeatDirective', function () {
             return function (scope, element, attrs) {
                 if (scope.$last) {
                     $('.slider').slider();
                 }
             };
-        })
+        })//le da formato al mensaje del numero de fotos
         .filter('numeroFotos', function () {
             return function (input) {
                 return input > 1 ? input + ' fotos' : input + ' foto';

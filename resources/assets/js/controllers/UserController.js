@@ -1,5 +1,9 @@
 angular.module('UserController', ['infinite-scroll']).controller('UserController', ['$scope', 'User', '$localStorage', '$location',
     function ($scope, User, $localStorage, $location) {
+        /*
+         * hace loguin a la app
+         * @returns {undefined}
+         */
         $scope.login = function () {
             if ($scope.loginForm.$valid) {
                 var user = new User({
@@ -18,6 +22,10 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             }
         };
 
+        /*
+         * Crea un usuario en la app
+         * @returns {unresolved}
+         */
         $scope.create = function () {
             if ($scope.registerForm.$valid) {
                 if (this.password != this.passwordConfirmation) {
@@ -60,10 +68,19 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             });
         };
 
+        /*
+         * Obtiene el número de visitas del perfil
+         * @returns {undefined}
+         */
         $scope.getVisits = function () {
             $scope.visitas = $scope.user.visitas;
         }
 
+        /*
+         * Actualiza un usuario
+         * @param {type} user
+         * @returns {undefined}
+         */
         $scope.update = function (user) {
             console.log(user);
             user.$update(function (res) {
@@ -82,6 +99,11 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             $(".card, body").toggleClass("show-menu");
         };
 
+        /*
+         * Calcula la edad de un usuario
+         * @param {type} birthday
+         * @returns {Number}
+         */
         $scope.calculateAge = function (birthday) { // birthday is a date
             var birthUser = new Date(birthday);
             var ageDifMs = Date.now() - birthUser.getTime();
@@ -91,6 +113,11 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
 
         $scope.ultimo = 1;
         $scope.users = [];
+        
+        /*
+         * Carga todos los usuarios desde el link explorar para usuarios normales
+         * @returns {undefined}
+         */
         $scope.findAll = function () {
             User.query({page: $scope.ultimo}, function (data) {
                 //for (var i = 1; i <= $scope.users.length; i++) {
@@ -137,6 +164,10 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             });
         };
 
+        /*
+         * Carga los usuarios que vana  ser administrados
+         * @returns {undefined}
+         */
         $scope.usersAdmin = function () {
             User.usersAdmin({userId: $scope.authenticatedUser.id}, function (data) {
                 $scope.users = data.data;
