@@ -1,0 +1,16 @@
+{
+  "name": "perfilEnnova",
+  "description": "Prueba de conocimiento para ennova",
+  "main": "",
+  "moduleType": [],
+  "authors": [
+    "Juan Leal"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "dependencies": {
+    "bootstrap-material-design": "~0.5.7",
+    "angular-ui-calendar": "~1.0.1"
+  }
+}

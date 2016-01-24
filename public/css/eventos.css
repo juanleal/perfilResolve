@@ -1,0 +1,31 @@
+.btn-floating {
+    right: -50px;
+}
+.modal {
+    overflow-y: visible;
+}
+.modal.bottom-sheet {
+    max-height: max-content;
+}
+.delete-event {
+    right: 20px;
+    top: 20px;
+}
+.fc-content{
+    cursor: pointer;
+}
+h2{
+  font-size: 2em;  
+}
+.asist {
+    font-size: 0.8em;
+}
+.duracion {
+    font-size: 0.8em;
+}
+.collection {
+    border: 0;
+}
+.collection-header{
+    color: #fff;
+}

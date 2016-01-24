@@ -1,0 +1,39 @@
+body {
+    padding-top: 70px;
+    padding-bottom: 30px;
+    font-family: Helvetica, san-serif;
+    //background: -webkit-linear-gradient(90deg, #03b9b4 10%, #03a9a4 90%); /* Chrome 10+, Saf5.1+ */
+    //background:    -moz-linear-gradient(90deg, #03b9b4 10%, #03a9a4 90%); /* FF3.6+ */
+    //background:     -ms-linear-gradient(90deg, #03b9b4 10%, #03a9a4 90%); /* IE10 */
+    //background:      -o-linear-gradient(90deg, #03b9b4 10%, #03a9a4 90%); /* Opera 11.10+ */
+    //background:         linear-gradient(90deg, #03b9b4 10%, #03a9a4 90%); /* W3C */
+    background-color: #ee6e73;
+}
+
+/* make our pages be full width and full height */
+/* positioned absolutely so that the pages can overlap each other as they enter and leave */
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+
+.login {
+    padding:10px;
+}
+.register {
+    padding:0px 2px 0px 2px;
+}
+
+.login {
+    -webkit-transition:all linear 0.5s;
+    transition:all linear 0.5s;
+}
+
+.register {
+    -webkit-transition:all linear 0.5s;
+    transition:all linear 0.5s;
+}
+
+.help-block {
+    color: #f44336;
+}

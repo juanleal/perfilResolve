@@ -1,0 +1,8 @@
+.card {
+    min-height: 200px;
+    height: auto;
+}
+.stats {
+    line-height: 50px;
+    font-size: 1.5em;
+}
