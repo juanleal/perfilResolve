@@ -14,6 +14,8 @@
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
         <script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
         <script type="application/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+        <script src="bower_components/angular-socket-io/socket.js"></script>
         <script src="bower_components/angular/angular.js"></script>
         <script type="text/javascript" src="bower_components/Materialize/dist/js/materialize.min.js"></script>
         <script type="text/javascript" src="bower_components/Materialize/js/date_picker/picker.time.js"></script>
@@ -38,7 +40,7 @@
                         <li ng-if="authenticatedUser == null" ng-class="{active:isActive('/auth/signup')}"><a href="/auth/signup">Sign Up</a></li>
                         <li ng-if="authenticatedUser == null" ng-class="{active:isActive('/auth/login')}"><a href="/auth/login">Log in</a></li>
                         <li ng-if="authenticatedUser != null" ng-class="{active:isActive('/' + authenticatedUser.url + '/perfil')}"><a ng-href="/{{authenticatedUser.url}}/perfil">{{authenticatedUser.nombre| capitalize:true }}</a></li>
-                        <li ng-if="authenticatedUser != null" ng-class="{active:isActive('/' + authenticatedUser.url + '/fotos')}"><a ng-href="/{{authenticatedUser.url}}/fotos">Fotos <span class="badge">{{authenticatedUser.fotos }}</span></a></li>
+                        <li ng-if="authenticatedUser != null" ng-class="{active:isActive('/' + authenticatedUser.url + '/fotos')}"><a ng-href="/{{authenticatedUser.url}}/fotos">Fotos <!--<span ng-if="authenticatedUser.fotos != null" class="badge">{{authenticatedUser.fotos }}</span>--></a></li>
                         <li ng-if="authenticatedUser != null" ng-class="{active:isActive('/' + authenticatedUser.url + '/eventos')}"><a ng-href="/{{authenticatedUser.url}}/eventos">Eventos</a></li>
                         <li ng-if="authenticatedUser != null && authenticatedUser.role_id == 1" ng-class="{active:isActive('/users/admin')}"><a ng-href="/users/admin">Usuarios</a></li>
                         <li ng-if="authenticatedUser != null" ng-click="logout()" class="logout"><a ng-href="#">Log out</a></li>

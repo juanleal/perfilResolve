@@ -3677,8 +3677,8 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                                 var datosUbicacion = results[0].formatted_address.split(',');
                                 //datos de la ciudad
                                 //$scope.ciudad = city.short_name;
-                                //viewForest(weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'}));
-                                weatherService.getClima({city: datosUbicacion[1].trim(), state: datosUbicacion[3].trim(), country: datosUbicacion[4].trim()})
+                                weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'})
+                                //weatherService.getClima({city: datosUbicacion[1].trim(), state: datosUbicacion[3].trim(), country: datosUbicacion[4].trim()})
                                         .then(viewForest);
                                 //console.log(city.short_name + " " + city.long_name);
                             } else {
@@ -3689,7 +3689,12 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                         }
                     });
                 }
-
+                
+                /*
+                 * Convierte los °f a °c
+                 * @param {type} input
+                 * @returns {String}
+                 */
                 var gradesC = function (input) {
                     var grados = (input - 32) / 1.8;
                     if (grados % 1 != 0) {
@@ -3698,7 +3703,10 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     return grados + '°C ';
                 };
 
-
+                /*
+                 * socia los códigos de la api con los nombres
+                 * @type Array
+                 */
                 var weatherIconMap = ['storm', 'storm', 'storm', 'lightning', 'lightning', 'snow', 'hail', 'hail',
                     'drizzle', 'drizzle', 'rain', 'rain', 'rain', 'snow', 'snow', 'snow', 'snow',
                     'hail', 'hail', 'fog', 'fog', 'fog', 'fog', 'wind', 'wind', 'snowflake',
@@ -3711,6 +3719,11 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                         scroller = $('#scroller'),
                         location = $('p.location');
 
+                 /*
+                  * Muestra los datos del tiempo en la vista
+                  * @param {type} r
+                  * @returns {undefined}
+                  */
                 function viewForest(r) {
                     var r = r.data;
                     var hoy = r.query.results.channel.item.condition;
@@ -3735,7 +3748,14 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     showSlide(0);
                     ///////
                 }
-
+                
+                /*
+                 * Va agregando datos a un array de pronosticos
+                 * @param {type} code
+                 * @param {type} day
+                 * @param {type} condition
+                 * @returns {undefined}
+                 */
                 function addWeather(code, day, condition) {
                     $scope.estados.push(
                             {
@@ -3765,7 +3785,9 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                     showSlide(currentSlide + 1);
                 });
 
-
+                /*
+                 * Slider de los pronosticos
+                 */
                 function showSlide(i) {
                     var items = scroller.find('li');
 
@@ -3790,24 +3812,25 @@ angular.module("GeoController", ["ui.map", "ui.event"])
             }])
                 .service('weatherService', function ($http, $q, $rootScope) {
                     var getQuery = function (location) {
-                        var query = 'select * from weather.forecast where woeid in ' + '(select woeid from geo.places(1) where text="4.710989, -74.072092")';
-
+                        var query = 'select * from weather.forecast where woeid in ' + '(select woeid from geo.places(1) where text="city, country")';
+                        //genera el query del servicio de pronostico
                         query = query.replace('city', location.city)
                                 //.replace('state', location.state)
                                  .replace('country', location.country);
                         console.log(query);
                         return query;
-                    }
+                    };
 
+                    //genera la url del servicio
                     var getUrl = function (location) {
                         var baseUrl = 'https://query.yahooapis.com/v1/public/yql?q=';
                         var extUrl = '&format=json&env=store://datatables.org/alltableswithkeys&callback=JSON_CALLBACK';
                         var query = encodeURIComponent(getQuery(location));
                         var finalUrl = baseUrl + query + extUrl;
                         return finalUrl;
-                    }
+                    };
 
-                    // implementation
+                    // implementacion del servicio de tiempo
                     this.getClima = function (location) {
                         var def = $q.defer();
                         var url = getUrl(location);
@@ -3817,11 +3840,15 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                             def.reject("Failed to get albums");
                         });
                         return def.promise;
-                    }
+                    };
 
                 })
 angular.module('DashboardController', []).controller('DashboardController', ['$scope', 'Board', '$localStorage', '$location',
     function ($scope, Board, $localStorage, $location) {
+        /**
+         * Carga el dashboard para el usuario logueado
+         * @returns {undefined}
+         */
         $scope.board = function () {
             var splitPath = $location.path().split('/');
             var userUrl = splitPath[splitPath.length - 1];
@@ -3847,6 +3874,12 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
     $scope.getEventos = function () {
         serviceEventos.getEventos($scope.authenticatedUser.id).then(mostrarEventos);
     }
+    
+    /*
+     * alimenta al model events que son los eventos que se muestran en el calendario
+     * @param {type} datos
+     * @returns {undefined}
+     */
     function mostrarEventos(datos) {
         for (var i = 0; i < datos.data.length; i++) {
             $scope.events.push({
@@ -3876,13 +3909,22 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             sources.push(source);
         }
     };
+    
+    /*
+     * Agrega un evento al calendario
+     * @param {type} objNewEvent
+     * @returns {undefined}
+     */
     $scope.addEvent = function (objNewEvent) {
         $scope.events.push(objNewEvent);
         toastr.success('Agregaste un nuevo evento!');
         $scope.nuevoEvento = null;
     };
 
-    /* store event */
+    /*
+     * Guarda un evento en la bd
+     * @returns {undefined}
+     */
     $scope.guardarEvento = function () {
         var eventDefault = $scope.nuevoEvento;
         var objNewEvent = {
@@ -3909,10 +3951,19 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             });
         }
     };
+    /*
+     * Quita un evento del calendario
+     * @param {type} index
+     * @returns {undefined}
+     */
     $scope.remove = function (index) {
         $scope.events.splice(index, 1);
     }
-    /* remove event */
+    /*
+     * Elimina un elemento de la bd
+     * @param {type} index
+     * @returns {undefined}
+     */
     $scope.eliminaEvento = function (index) {
         var idEliminar = this.info.id;
         $.each($scope.events, function (index, value) {
@@ -3927,6 +3978,11 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             toastr.error('Ups!, hubo un error eliminando el evento!');
         });
     };
+    /*
+     * alimenta el model de los próximos eventos
+     * @param {type} proximosEventos
+     * @returns {undefined}
+     */
     function mostrarProximos(proximosEventos) {
         angular.forEach(proximosEventos.data, function (value, key) {
             value.start = new Date(value.start);
@@ -3934,7 +3990,10 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
             $scope.proximos.push(value);
         });
     }
-    /* proximos eventos */
+    /*
+     * Carga los próximos eventos del usuario logueado
+     * @returns {undefined}
+     */
     $scope.proximosEventos = function () {
         serviceEventos.getProximos($scope.authenticatedUser.id).then(mostrarProximos);
     }
@@ -3961,7 +4020,11 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
     /* event sources array*/
     $scope.eventSources = [$scope.events];
 
-
+    /*
+     * Actualiza el estado de una asistencia a un evento
+     * @param {type} $event
+     * @returns {undefined}
+     */
     $scope.actualizarAsistencia = function ($event) {
         Eventos.update({
             id: $event.target.id,
@@ -3974,6 +4037,10 @@ function CalendarCtrl($scope, $compile, $timeout, uiCalendarConfig, Eventos, ser
         });
     };
 
+    /*
+     * Verifica a cuantos eventos se han asistido en el último mes
+     * @returns {undefined}
+     */
     $scope.eventosAsistidos = function () {
         serviceEventos.getAsistidos($scope.authenticatedUser.id).then(function (data) {
             $scope.asistidos = data.data;
@@ -3998,22 +4065,13 @@ eventos.filter('numeroEventos', function () {
         return input>1 || input < 1 ? input + ' eventos' : input + ' evento';
     };
 });
-var myApp = angular.module('Exlorador', ['infinite-scroll']);
-
-myApp.controller('ExloradorController', function($scope) {
-  $scope.images = [1, 2, 3, 4, 5, 6, 7, 8];
-
-  $scope.loadMore = function() {
-    var last = $scope.images[$scope.images.length - 1];
-    for(var i = 1; i <= 8; i++) {
-      $scope.images.push(last + i);
-    }
-  };
-});
 angular.module('FotosController', [])
         .controller('FotosController', ['$scope', 'Foto', '$localStorage', '$location', '$route',
             function ($scope, Foto, $localStorage, $location, $route) {
-
+                /*
+                 * Guarda una foto del usuario
+                 * @returns {undefined}
+                 */
                 $scope.create = function () {
                     if ($scope.addFoto.$valid) {
                         var foto = new Foto({
@@ -4031,14 +4089,22 @@ angular.module('FotosController', [])
                         });
                     }
                 };
+                /*
+                 * refresca las fotos una vez se guardan
+                 * @returns {undefined}
+                 */
                 $scope.refFotos = function () {
                     //window.location.reload();
                     toastr.options.onShown = function () {
                         $route.reload();
                     }
                     toastr.success('Tú foto se agregó!');
-                }
-
+                };
+                
+                /*
+                 * Consulta las fotos del usuario
+                 * @returns {undefined}
+                 */
                 $scope.getFotos = function () {
                     /*var splitPath = $location.path().split('/');
                      var userId = splitPath[1];*/
@@ -4057,11 +4123,10 @@ angular.module('FotosController', [])
                 };
 
                 $scope.viewLoaded = function () {
-                    alert('view load sussefully')
                     $('.slider').addClass('fullscreen');
                 };
             }
-        ])
+        ]) //esta es una directiva para manipular archivos
         .directive('appFilereader', function (
                 $q
                 ) {
@@ -4104,20 +4169,20 @@ angular.module('FotosController', [])
                             return deferred.promise;
                         }
 
-                    }); //change
+                    });
 
-                } //link
+                }
 
-            }; //return
+            };
 
-        })
+        })//verifica si se termino un ng-repeat para bindear con el slider de las fotos para el efecro
         .directive('myRepeatDirective', function () {
             return function (scope, element, attrs) {
                 if (scope.$last) {
                     $('.slider').slider();
                 }
             };
-        })
+        })//le da formato al mensaje del numero de fotos
         .filter('numeroFotos', function () {
             return function (input) {
                 return input > 1 ? input + ' fotos' : input + ' foto';
@@ -4163,6 +4228,9 @@ angular.module('MainController', []).controller('MainController', ['$scope', '$l
             });
         };
 
+        /*
+         * Cierra sesión
+         */
         $scope.logout = function () {
             delete $localStorage.token;
             $scope.authenticatedUser = null;
@@ -4170,14 +4238,15 @@ angular.module('MainController', []).controller('MainController', ['$scope', '$l
             $location.replace();
         };
     }
-]).filter('capitalize', function () {
-    return function (input, all) {
-        var reg = (all) ? /([^\W_]+[^\s-]*) */g : /([^\W_]+[^\s-]*)/;
-        return (!!input) ? input.replace(reg, function (txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        }) : '';
-    }
-});
+])      //capitaliza un texto (nombre)
+        .filter('capitalize', function () {
+            return function (input, all) {
+                var reg = (all) ? /([^\W_]+[^\s-]*) */g : /([^\W_]+[^\s-]*)/;
+                return (!!input) ? input.replace(reg, function (txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                }) : '';
+            }
+        });
 
 angular.module('PostController', []).controller('PostController', ['$scope', '$location', '$routeParams', 'Post',
     function ($scope, $location, $routeParams, Post) {
@@ -4237,6 +4306,10 @@ angular.module('PostController', []).controller('PostController', ['$scope', '$l
 
 angular.module('UserController', ['infinite-scroll']).controller('UserController', ['$scope', 'User', '$localStorage', '$location',
     function ($scope, User, $localStorage, $location) {
+        /*
+         * hace loguin a la app
+         * @returns {undefined}
+         */
         $scope.login = function () {
             if ($scope.loginForm.$valid) {
                 var user = new User({
@@ -4255,6 +4328,10 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             }
         };
 
+        /*
+         * Crea un usuario en la app
+         * @returns {unresolved}
+         */
         $scope.create = function () {
             if ($scope.registerForm.$valid) {
                 if (this.password != this.passwordConfirmation) {
@@ -4297,10 +4374,19 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             });
         };
 
+        /*
+         * Obtiene el número de visitas del perfil
+         * @returns {undefined}
+         */
         $scope.getVisits = function () {
             $scope.visitas = $scope.user.visitas;
         }
 
+        /*
+         * Actualiza un usuario
+         * @param {type} user
+         * @returns {undefined}
+         */
         $scope.update = function (user) {
             console.log(user);
             user.$update(function (res) {
@@ -4319,6 +4405,11 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             $(".card, body").toggleClass("show-menu");
         };
 
+        /*
+         * Calcula la edad de un usuario
+         * @param {type} birthday
+         * @returns {Number}
+         */
         $scope.calculateAge = function (birthday) { // birthday is a date
             var birthUser = new Date(birthday);
             var ageDifMs = Date.now() - birthUser.getTime();
@@ -4328,6 +4419,11 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
 
         $scope.ultimo = 1;
         $scope.users = [];
+        
+        /*
+         * Carga todos los usuarios desde el link explorar para usuarios normales
+         * @returns {undefined}
+         */
         $scope.findAll = function () {
             User.query({page: $scope.ultimo}, function (data) {
                 //for (var i = 1; i <= $scope.users.length; i++) {
@@ -4374,6 +4470,10 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
             });
         };
 
+        /*
+         * Carga los usuarios que vana  ser administrados
+         * @returns {undefined}
+         */
         $scope.usersAdmin = function () {
             User.usersAdmin({userId: $scope.authenticatedUser.id}, function (data) {
                 $scope.users = data.data;

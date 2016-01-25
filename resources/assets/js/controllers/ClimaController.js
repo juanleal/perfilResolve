@@ -127,8 +127,8 @@ angular.module("GeoController", ["ui.map", "ui.event"])
                                 var datosUbicacion = results[0].formatted_address.split(',');
                                 //datos de la ciudad
                                 //$scope.ciudad = city.short_name;
-                                //viewForest(weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'}));
-                                weatherService.getClima({city: datosUbicacion[1].trim(), state: datosUbicacion[3].trim(), country: datosUbicacion[4].trim()})
+                                weatherService.getClima({city: 'bogotá', state: 'córdoba', country: 'colombia'})
+                                //weatherService.getClima({city: datosUbicacion[1].trim(), state: datosUbicacion[3].trim(), country: datosUbicacion[4].trim()})
                                         .then(viewForest);
                                 //console.log(city.short_name + " " + city.long_name);
                             } else {
