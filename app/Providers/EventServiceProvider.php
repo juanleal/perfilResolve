@@ -1,12 +1,13 @@
-<?php namespace Camp\Providers;
+<?php
+
+namespace Camp\Providers;
 
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Hash;
 use Camp\User;
 
-class EventServiceProvider extends ServiceProvider
-{
+class EventServiceProvider extends ServiceProvider {
 
     /**
      * The event handler mappings for the application.
@@ -17,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
         'event.name' => [
             'EventListener',
         ],
+        'users.update' => [
+            'App\Handlers\Events\UserUpdatedEventHandler',
+        ],
     ];
 
     /**
@@ -25,8 +29,7 @@ class EventServiceProvider extends ServiceProvider
      * @param  \Illuminate\Contracts\Events\Dispatcher $events
      * @return void
      */
-    public function boot(DispatcherContract $events)
-    {
+    public function boot(DispatcherContract $events) {
         parent::boot($events);
 
         User::creating(function ($user) {
@@ -35,4 +38,5 @@ class EventServiceProvider extends ServiceProvider
             }
         });
     }
+
 }

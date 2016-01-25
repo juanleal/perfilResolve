@@ -3490,7 +3490,7 @@ angular.module('campApp', [
     'FotosService',
     'CalendarCtrl',
     'EventosService'
-]);
+])
 $(document).on('ready', function () {
     $(".button-collapse").sideNav();
     $('.tooltipped').tooltip({delay: 50});
@@ -4561,7 +4561,31 @@ angular.module('UserController', ['infinite-scroll']).controller('UserController
     return function (input) {
         return input > 1 || input < 1 ? input + ' veces' : input + ' vez';
     };
-});
+}).factory('socket', function ($rootScope) {
+    var socket = io.connect('http://127.0.0.1:3000/');
+    return {
+        on: function (eventName, callback) {
+            socket.on(eventName, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    console.log('SOCKETEEEE ONN');
+                    callback.apply(socket, args);
+                });
+            });
+        },
+        emit: function (eventName, data, callback) {
+            socket.emit(eventName, data, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    if (callback) {
+                        console.log('SOCKETEEEE EMIT');
+                        callback.apply(socket, args);
+                    }
+                });
+            })
+        }
+    };
+})
 angular.module('BoardService', []).factory('Board', ['$resource',
   function ($resource) {
     return $resource('/api/perfil/', {

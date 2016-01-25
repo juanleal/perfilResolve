@@ -10,6 +10,7 @@ use Camp\User;
 use Tymon\JWTAuth\JWTAuth;
 use Camp\Http\Controllers\Crypt;
 use Hash;
+use Camp\Events\Event;
 
 class UserController extends Controller {
 
@@ -83,6 +84,7 @@ class UserController extends Controller {
      * @return Response
      */
     public function index() {
+        event(new \Camp\Handlers\Events\UserUpdatedEventHandler(User::all()));
         return User::where('bloqued', false)->paginate(4);
     }
 
@@ -108,6 +110,7 @@ class UserController extends Controller {
             abort(500, 'Could not save user.');
         }
         $user['token'] = $this->jwtAuth->fromUser($user);
+        event(new \Camp\Handlers\Events\UserUpdatedEventHandler(User::all()));
         return $user;
     }
 
@@ -124,12 +127,15 @@ class UserController extends Controller {
         if ($usuario) {
             $this->guardarVisitaPerfil($usuario, $usrIn);
         }
+        //Event::fire(UserUpdatedEventHandler::EVENT, $usuario);
+        event(new \Camp\Handlers\Events\UserUpdatedEventHandler(User::all()));
         return $usuario;
     }
 
     /*
      * Almacena las visitas de los perfiles que se visitan
      */
+
     public function guardarVisitaPerfil($newModel, $userIn) {
         if ($newModel->id != $userIn) {
             $newModel->visitas = $newModel->visitas + 1;
@@ -176,6 +182,7 @@ class UserController extends Controller {
         if (!$user->save()) {
             abort(500, "Updating failed");
         }
+        event(new \Camp\Handlers\Events\UserUpdatedEventHandler(User::all()));
         return $newUser;
     }
 
@@ -225,6 +232,7 @@ class UserController extends Controller {
     public function usersAdmin() {
         $id = $this->req->input('userId');
         if ($this->isAdmin($id)) {
+            event(new \Camp\Handlers\Events\UserUpdatedEventHandler(User::all()));
             return response()->json(['data' => User::all()]);
         }
         return response()->json(['status' => 401, 'error' => 'Ups!, parece que estás buscando lo que no debes'], 401);

@@ -12,11 +12,10 @@
         <link rel="stylesheet" href="bower_components/fullcalendar/dist/fullcalendar.css"/>
         <link href="bower_components/toastr/toastr.css" rel="stylesheet"/>
         <link type="text/css" rel="stylesheet" href="css/style.css"/>
-        <script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
         <script type="application/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
         <script src="http://localhost:3000/socket.io/socket.io.js"></script>
         <script src="bower_components/angular-socket-io/socket.js"></script>
-        <script src="bower_components/angular/angular.js"></script>
         <script type="text/javascript" src="bower_components/Materialize/dist/js/materialize.min.js"></script>
         <script type="text/javascript" src="bower_components/Materialize/js/date_picker/picker.time.js"></script>
         <script src="bower_components/toastr/toastr.js"></script>
@@ -24,6 +23,7 @@
         <script type="text/javascript" src="bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
         <script type="text/javascript" src="bower_components/fullcalendar/dist/gcal.js"></script>
         <script type="text/javascript" src="bower_components/angular-ui-calendar/src/calendar.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
         <script type="application/javascript" src="<% elixir('js/all.js') %>"></script>
         <!--<link rel="stylesheet" href="/css/app.css"/>
         <link rel="stylesheet" href="<% elixir('css/all.css') %>"/>-->
